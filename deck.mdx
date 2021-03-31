@@ -1,15 +1,20 @@
+import "./styles.css";
+
 <Head>
-	<title>WTH is ISR?</title>
+	<title>How to implement authentication cheaply and securely</title>
 	<meta name="twitter:card" content="summary_large_image" />
 	<meta name="twitter:site" content="@smakosh" />
-	<meta name="twitter:title" content="WTH is ISR?" />
+	<meta
+		name="twitter:title"
+		content="How to implement authentication cheaply and securely"
+	/>
 	<meta
 		name="twitter:description"
-		content="A quick explanation of what incremental static regeneration is in Next js"
+		content="How to implement authentication cheaply and securely"
 	/>
 	<meta
 		name="twitter:image"
-		content="https://2020.wth-isg.talks.smakosh.com/images/card.png"
+		content="https://2021.custom-auth.talks.smakosh.com/images/card.png"
 	/>
 </Head>
 
@@ -21,19 +26,28 @@
 
 ---
 
+## About me
+
+- I'm Ismail Ghallou, a Software Consultant @ [The Landing](https://thelanding.app?utm_source=smakosh_talk)
+  > A social design platform that empowers everyone to create together
+- Building [Ontwik](https://ontwik-dev.com?utm_source=smakosh_talk) with my friend Jeffrey!
+  > A hiring platform that connects remote developers with founders around the world
+- I love open source, building digital products and watching anime.
+  > My fav project is a portfolio theme that you can deploy in one click and Code geass is my fav anime
+
+---
+
 Key points
 
 <Steps>
 
-
 - Custom auth vs services
 - Sessions with cookies vs jwt with localStorage
-- Pros/Cons of http only cookie
 - Pros/Cons of jwt
+- Pros/Cons of http only cookie
 - Demo
 
 </Steps>
-
 
 ---
 
@@ -41,357 +55,91 @@ Key points
 
 ---
 
-import csr from "./images/csr.png";
+## Custom auth VS services
 
-## CSR
+---
+
+## Custom implementation
+
+### Pros:
+
+- Cheap
+- Secure (relatively) if you use trusted and maintained libraries
+- Control over data
+
+---
+
+### Cons:
+
+- You're responsible if something breaks
+- Costs time and engineering resources to implement
+
+---
+
+import services from "./images/services.png";
 
 <div style={{ width: 900, height: 900 }}>
-	<img src={csr} />
+	<img src={services} />
 </div>
 
 ---
 
-import ssr from "./images/ssr.png";
+## Services
 
-## SSR
+### Pros
 
-<div style={{ width: 900, height: 900 }}>
-	<img src={ssr} />
-</div>
-
----
-
-import ssg from "./images/ssg.png";
-
-## SSG
-
-<div style={{ width: 900, height: 900 }}>
-	<img src={ssg} />
-</div>
+- Time saving and doesn't require lot of engineering resources to implement
+- Support provided by the service
+- The service is responsible if something breaks
+- Scalable automatically
+- Secure (relatively) and the service is responsible if something goes wrong
 
 ---
 
-import isr from "./images/isr.png";
+### Cons
 
-## ISR
-
-<div style={{ width: 900, height: 900 }}>
-	<img src={isr} />
-</div>
+- It gets expensive
+- You don't have full control over your data
+- Locked to the service
 
 ---
 
-import next from "./images/next.svg";
-
-<div style={{ width: 800, height: 800 }}>
-	<img src={next} />
-</div>
+## Sessions with cookies VS JWT with localStorage
 
 ---
 
-import pros from "./images/pros.png";
+## Sessions with cookies
 
-<div style={{ width: 800, height: 800 }}>
-	<img src={pros} />
-</div>
+### Pros
 
----
-
-## getStaticProps, getStaticPaths, getServerSideProps
+- Secure, not vulnerable to XSS and CSRF attacks (if you set it to be http only and define the sameSite property with `Lax` as value)
+- Cookie can be passed through sub domains
 
 ---
 
-<CodeSurfer theme={nightOwl}>
+### Cons
 
-
-```js 8:19 title="index.js"
-const HomePage = ({ products, categories }) => (
-	<>
-		<pre>{JSON.stringify(products, undefined, 2)}</pre>
-		<pre>{JSON.stringify(categories, undefined, 2)}</pre>
-	</>
-);
-
-export const getStaticProps = async () => {
-	const products = await fetchProducts();
-	const categories = await fetchCategories();
-
-	return {
-		props: {
-			products,
-			categories,
-		},
-		revalidate: 2,
-	};
-};
-
-export default HomePage;
-```
-
-```js 1:6 title="index.js"
-const HomePage = ({ products, categories }) => (
-	<>
-		<pre>{JSON.stringify(products, undefined, 2)}</pre>
-		<pre>{JSON.stringify(categories, undefined, 2)}</pre>
-	</>
-);
-
-export const getStaticProps = async () => {
-	const products = await fetchProducts();
-	const categories = await fetchCategories();
-
-	return {
-		props: {
-			products,
-			categories,
-		},
-		revalidate: 2,
-	};
-};
-
-export default HomePage;
-```
-
-```js title="index.js"
-const HomePage = ({ products, categories }) => (
-	<>
-		<pre>{JSON.stringify(products, undefined, 2)}</pre>
-		<pre>{JSON.stringify(categories, undefined, 2)}</pre>
-	</>
-);
-
-export const getStaticProps = async () => {
-	const products = await fetchProducts();
-	const categories = await fetchCategories();
-
-	return {
-		props: {
-			products,
-			categories,
-		},
-		revalidate: 2,
-	};
-};
-
-export default HomePage;
-```
-
-</CodeSurfer>
-
+- Cookie cannot be passed cross domains
+- Requires server side validation each time the user visits a protected route
 
 ---
 
-## getStaticProps, getStaticPaths
+## JWT with localStorage
+
+### Pros
+
+- You can set the same token on different applications/domains
+- Doesn't require server side validation each time the user visits a protected route
 
 ---
 
-<CodeSurfer theme={nightOwl}>
+### Cons
 
-
-```js 12:22 title="[id].js"
-import { useRouter } from "next/router";
-
-const ProductPage = ({ product }) => {
-	const router = useRouter();
-
-	if (router.isFallback) {
-		return <h1>Loading...</h1>;
-	}
-	return <pre>{JSON.stringify(product, undefined, 2)}</pre>;
-};
-
-export const getStaticPaths = async () => {
-	const products = await fetchProducts();
-	const paths = products.map(({ id }) => ({
-		params: { id },
-	}));
-
-	return {
-		paths,
-		fallback: true,
-	};
-};
-
-export const getStaticProps = async ({ params: { id } }) => {
-	const product = await fetchProductById(id);
-
-	return {
-		props: {
-			product,
-		},
-		revalidate: 2,
-	};
-};
-
-export default ProductPage;
-```
-
-```js 24:33 title="[id].js"
-import { useRouter } from "next/router";
-
-const ProductPage = ({ product }) => {
-	const router = useRouter();
-
-	if (router.isFallback) {
-		return <h1>Loading...</h1>;
-	}
-	return <pre>{JSON.stringify(product, undefined, 2)}</pre>;
-};
-
-export const getStaticPaths = async () => {
-	const products = await fetchProducts();
-	const paths = products.map(({ id }) => ({
-		params: { id },
-	}));
-
-	return {
-		paths,
-		fallback: true,
-	};
-};
-
-export const getStaticProps = async ({ params: { id } }) => {
-	const product = await fetchProductById(id);
-
-	return {
-		props: {
-			product,
-		},
-		revalidate: 2,
-	};
-};
-
-export default ProductPage;
-```
-
-```js title="[id].js"
-import { useRouter } from "next/router";
-
-const ProductPage = ({ product }) => {
-	const router = useRouter();
-
-	if (router.isFallback) {
-		return <h1>Loading...</h1>;
-	}
-	return <pre>{JSON.stringify(product, undefined, 2)}</pre>;
-};
-
-export const getStaticPaths = async () => {
-	const products = await fetchProducts();
-	const paths = products.map(({ id }) => ({
-		params: { id },
-	}));
-
-	return {
-		paths,
-		fallback: true,
-	};
-};
-
-export const getStaticProps = async ({ params: { id } }) => {
-	const product = await fetchProductById(id);
-
-	return {
-		props: {
-			product,
-		},
-		revalidate: 2,
-	};
-};
-
-export default ProductPage;
-```
-
-</CodeSurfer>
-
+- vulnerable to XSS attacks
 
 ---
 
-## getServerSideProps
-
----
-
-import { CodeSurfer, Step } from "code-surfer";
-import { nightOwl } from "@code-surfer/themes";
-
-<CodeSurfer theme={nightOwl}>
-
-
-```js 8:19 title="index.js"
-const HomePage = ({ products, categories }) => (
-	<>
-		<pre>{JSON.stringify(products, undefined, 2)}</pre>
-		<pre>{JSON.stringify(categories, undefined, 2)}</pre>
-	</>
-);
-
-export const getServerSideProps = async () => {
-	const products = await fetchProducts();
-	const categories = await fetchCategories();
-
-	return {
-		props: {
-			products,
-			categories,
-		},
-	};
-};
-
-export default HomePage;
-```
-
-```js 1:6 title="index.js"
-const HomePage = ({ products, categories }) => (
-	<>
-		<pre>{JSON.stringify(products, undefined, 2)}</pre>
-		<pre>{JSON.stringify(categories, undefined, 2)}</pre>
-	</>
-);
-
-export const getServerSideProps = async () => {
-	const products = await fetchProducts();
-	const categories = await fetchCategories();
-
-	return {
-		props: {
-			products,
-			categories,
-		},
-	};
-};
-
-export default HomePage;
-```
-
-```js title="index.js"
-const HomePage = ({ products, categories }) => (
-	<>
-		<pre>{JSON.stringify(products, undefined, 2)}</pre>
-		<pre>{JSON.stringify(categories, undefined, 2)}</pre>
-	</>
-);
-
-export const getServerSideProps = async () => {
-	const products = await fetchProducts();
-	const categories = await fetchCategories();
-
-	return {
-		props: {
-			products,
-			categories,
-		},
-	};
-};
-
-export default HomePage;
-```
-
-</CodeSurfer>
-
-
----
-
-## Demo time
+## Time to code!
 
 ---
 
@@ -401,7 +149,10 @@ export default HomePage;
 
 Refs:
 
+- GraphQL Docs
+- GraphQL Codegen Docs
+- https://redislabs.com/solutions/use-cases/session-management/
 - Next js Docs
-- Ontwik.dev for demo
 - MDX Deck and Code surf for slides
-- https://next-code-elimination.now.sh/
+- https://en.wikipedia.org/wiki/Cross-site_request_forgery
+- https://en.wikipedia.org/wiki/Cross-site_scripting
